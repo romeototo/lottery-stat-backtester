@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Streamlit
+.streamlit/secrets.toml
+streamlit.log
+streamlit.err.log
+
+# Local data and generated reports
+data/real_samples/*
+!data/real_samples/README.md
+*.xlsx
+*.xls
+*.csv
+!data/sample_thai_lottery.csv
+lottery_backtest_report*.xlsx
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
