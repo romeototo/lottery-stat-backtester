@@ -14,50 +14,43 @@
 
 > ⚠️ **Disclaimer:** หวยเป็นเหตุการณ์สุ่ม ไม่มีวิธีใดรับประกันผลลัพธ์ได้ โปรแกรมนี้ใช้เพื่อการศึกษาเชิงสถิติ การทดสอบโมเดล และการคุมความเสี่ยงเท่านั้น
 
-## เป้าหมายของ V1
+## ✨ Key Features (เป้าหมายของ V1)
 
-- Upload CSV / Excel
-- ตรวจคุณภาพข้อมูล
-- Frequency Analysis
-- Gap Analysis
-- Digit-Level Analysis
-- Rolling Backtest
-- Random Baseline
-- Model Tournament
-- Prediction Score
-- Budget / Expected Loss Calculator
-- Export Excel Report
+- 📁 **Upload CSV / Excel**: รองรับไฟล์ข้อมูลจาก GLO
+- 🛡️ **Data Quality Check**: ตรวจสอบคุณภาพข้อมูลแบบ Row-level
+- 📊 **Statistical Analysis**: Frequency Analysis, Gap Analysis, และ Digit-Level Analysis
+- 🔄 **Rolling Backtest**: ระบบทดสอบย้อนหลัง (ป้องกัน Look-ahead bias)
+- 🤖 **Model Tournament**: เปรียบเทียบโมเดลทางสถิติกับ Random Baseline
+- 💰 **Risk Calculator**: คำนวณงบประมาณและโอกาสขาดทุน (Expected Loss)
+- 📑 **Excel Export**: ส่งออกรายงานสถิติแบบครบถ้วน
 
-V1 focuses on Thai lottery data only. Lao lottery support is listed as a future limitation, not part of this release.
+> *Note: V1 focuses on Thai lottery data only. Lao lottery support is planned for future releases.*
 
-## Quick start
+## 🚀 Getting Started (วิธีติดตั้งและใช้งาน)
 
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-streamlit run app.py
-```
-
-Open the local Streamlit URL shown in the terminal. The app loads `data/sample_thai_lottery.csv` automatically when no file is uploaded.
-
-> Reminder: หวยเป็นเหตุการณ์สุ่ม ไม่มีวิธีใดรับประกันผลลัพธ์ได้ Backtest และ Prediction Score ใช้เพื่อการศึกษาและตรวจความเสี่ยงเท่านั้น
-
-## วิธีติดตั้ง
-
-```bash
+# 1. Clone or navigate to the project directory
 cd lottery-stat-backtester
+
+# 2. Create a virtual environment
 python -m venv .venv
 
-# Windows
+# 3. Activate the environment
+# Windows:
 .venv\Scripts\activate
-
-# macOS / Linux
+# macOS / Linux:
 source .venv/bin/activate
 
+# 4. Install dependencies
 pip install -r requirements.txt
+
+# 5. Run the application
 streamlit run app.py
 ```
+
+Open the local Streamlit URL shown in the terminal. The app loads `data/sample_thai_lottery.csv` automatically if no file is uploaded.
+
+> ⚠️ **Reminder:** หวยเป็นเหตุการณ์สุ่ม ไม่มีวิธีใดรับประกันผลลัพธ์ได้ ฟังก์ชัน Backtest และ Prediction Score มีไว้เพื่อการศึกษาและประเมินความเสี่ยงเท่านั้น
 
 ## รูปแบบข้อมูล CSV / Excel
 
@@ -133,96 +126,37 @@ Rules:
 
 `data/sample_thai_lottery.csv` is sample data only. It is intentionally small and is meant for checking that the app runs. For serious backtesting, upload a larger official historical file and inspect Data Quality plus Data Trust Score first.
 
-## Screenshots
+## 📸 Screenshots
 
-Add release screenshots with these filenames:
-
-- `screenshots/dashboard.png` - app loaded with sample data, showing title, disclaimer, sidebar settings, and the default dashboard state.
-- `screenshots/data-quality.png` - Data Quality tab showing row counts, Trust Score, Calibration Report, and row-level issue table.
-- `screenshots/backtest.png` - Backtest tab showing Model Tournament, No Edge warnings, Statistical Significance, and Random Baseline.
-- `screenshots/export.png` - Export tab showing the Excel download button and report description.
-
-Use sample or public data only. Do not include private data in screenshots.
-
-After adding screenshots, include them near the top of this README:
-
-```md
+*(Screenshots will be added here in the next release)*
+<!-- 
 ![Dashboard](screenshots/dashboard.png)
 ![Data Quality](screenshots/data-quality.png)
 ![Backtest](screenshots/backtest.png)
-![Export](screenshots/export.png)
-```
+![Export](screenshots/export.png) 
+-->
 
-## Real GLO data validation checklist
+## 🧠 Backtest Methodology (หลักการ Backtest)
 
-Use this before building the optional API fetcher.
+**Rolling Backtest:**
+- งวดที่ N จะถูกทดสอบโดยใช้เฉพาะข้อมูลประวัติศาสตร์ **ก่อนหน้า** งวด N เท่านั้น (ป้องกัน Look-ahead bias)
+- โมเดลจะเลือกตัวเลขตามจำนวนที่กำหนด (เช่น 5 เลข)
+- หากเลขที่ออกจริงอยู่ในชุดที่โมเดลเลือก จะนับเป็น **Hit**
+- ผลลัพธ์จะถูกนำไปเปรียบเทียบกับ **Random Baseline** เสมอ เพื่อตรวจสอบว่าโมเดลมี Edge หรือมีความน่าจะเป็นที่เหนือกว่าการสุ่มหรือไม่
 
-1. Download a real historical CSV/Excel file from the official Thai GLO/Open Data source.
-2. Save it locally, optionally under `data/real_samples/`. Do not commit real/private downloaded files.
-3. Run `streamlit run app.py`.
-4. Select `GLO-style official file import` in the sidebar.
-5. Upload the real GLO file.
-6. Verify the normalized preview:
-   - `source` is `official_glo`
-   - `date` is parsed correctly
-   - `first_prize` stays 6 digits
-   - `last_2_digits` stays 2 digits
-   - 3-digit prize fields preserve leading zeros such as `009` and `095`
-7. Verify Data Quality:
-   - missing dates
-   - duplicate draw dates
-   - invalid `last_2_digits`
-   - row-level issue report
-8. Verify Calibration Report:
-   - imported row count
-   - date range
-   - missing draw periods
-   - invalid prize formats
-9. Verify Data Trust Score:
-   - official GLO files should usually score higher than manual/sample files
-   - low trust warning appears when data is incomplete or malformed
-10. Export Excel and confirm these sheets exist:
-   - `Raw Data`
-   - `Data Quality`
-   - `Data Quality Issues`
-   - `Data Trust Score`
-   - `Calibration Report`
-   - `Model Tournament`
-   - `Random Baseline Summary`
-   - `Statistical Significance`
-   - `Disclaimer`
+### 🏆 Model Tournament ใน V1
+โมเดลที่เปิดให้ทดสอบในเวอร์ชันนี้ประกอบด้วย:
+- **Random** (Baseline สำหรับเปรียบเทียบ)
+- **Hot Frequency** (เลขที่ออกบ่อย)
+- **Cold Frequency** (เลขที่ออกน้อย/เลขดับ)
+- **Gap Overdue** (เลขที่ทิ้งช่วงนาน)
+- **Recent Trend** (แนวโน้มระยะสั้น)
+- **Digit-Level** (สถิติรายหลัก)
+- **Hybrid** (โมเดลผสมผสาน)
 
-Issues to watch for:
+## 🗺️ Roadmap (สิ่งที่ยังไม่ได้ทำใน V1)
 
-- Thai column names not recognized by the alias map.
-- Date columns exported as Thai/Buddhist calendar years or text.
-- Leading zeros stripped by Excel before upload.
-- Multiple rows per draw date that require reshaping before import.
-- Gaps caused by missing draws in the downloaded file rather than real missing periods.
-- Low sample size causing weak backtest and wide confidence intervals.
-
-## หลักการ Backtest
-
-Rolling Backtest:
-
-- งวดที่ N ใช้เฉพาะข้อมูลก่อนงวด N เท่านั้น
-- โมเดลเลือกเลขตามจำนวนที่กำหนด เช่น 5 เลข
-- ถ้าเลขจริงอยู่ในชุดที่เลือก = hit
-- เทียบกับ Random Baseline ทุกครั้ง
-
-## Model Tournament ใน V1
-
-- Random
-- Hot Frequency
-- Cold Frequency
-- Gap Overdue
-- Recent Trend
-- Digit-Level
-- Hybrid
-
-## สิ่งที่ยังไม่ได้ทำใน V1
-
-ดูรายละเอียดใน `TODO_FOR_CODEX.md`
+ดูรายละเอียดฟีเจอร์ในอนาคตได้ในไฟล์ [`TODO_FOR_CODEX.md`](TODO_FOR_CODEX.md)
 
 ## Common errors and fixes
 
