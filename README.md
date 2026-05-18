@@ -1,21 +1,18 @@
-# Lottery Stat Backtester
+<div align="center">
+  <h1>🎯 Lottery Stat Backtester</h1>
+  <p>Local Streamlit app for Thai lottery historical-data validation, statistical backtesting, random-baseline comparison, and Excel reporting.</p>
 
-Local Streamlit app for Thai lottery historical-data validation, statistical backtesting, random-baseline comparison, and Excel reporting.
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python" alt="Python" />
+  <img src="https://img.shields.io/badge/Streamlit-App-red?style=for-the-badge&logo=streamlit" alt="Streamlit" />
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License" />
+  <img src="https://img.shields.io/badge/Status-V1%20Release%20Candidate-orange?style=for-the-badge" alt="Status" />
+</div>
+
+<br />
 
 โปรแกรมวิเคราะห์สถิติหวยไทยแบบรันในเครื่อง เน้นตรวจคุณภาพข้อมูล ทดสอบย้อนหลัง และส่งออกรายงาน Excel
 
-> Disclaimer: หวยเป็นเหตุการณ์สุ่ม ไม่มีวิธีใดรับประกันผลลัพธ์ได้ โปรแกรมนี้ใช้เพื่อการศึกษาเชิงสถิติ การทดสอบโมเดล และการคุมความเสี่ยงเท่านั้น
-
-## Badges
-
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![Streamlit](https://img.shields.io/badge/Streamlit-App-red)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-V1%20Release%20Candidate-orange)
-
-## GitHub project description
-
-Thai lottery statistical backtester with GLO-style file import, data quality checks, trust scoring, random-baseline comparison, and Excel export.
+> ⚠️ **Disclaimer:** หวยเป็นเหตุการณ์สุ่ม ไม่มีวิธีใดรับประกันผลลัพธ์ได้ โปรแกรมนี้ใช้เพื่อการศึกษาเชิงสถิติ การทดสอบโมเดล และการคุมความเสี่ยงเท่านั้น
 
 ## เป้าหมายของ V1
 
@@ -93,6 +90,17 @@ streamlit run app.py
 
 You may place downloaded files in `data/real_samples/` for local testing. Do not hardcode private or local-only file paths in the code.
 
+## Optional GLO API fetcher
+
+V1 keeps file import as the stable path. The app also includes an optional GLO API fetcher for quick checks:
+
+- `GLO API latest draw` fetches the latest official draw.
+- `GLO API by draw date` fetches one selected official draw date.
+
+If the API is unavailable or changes its response shape, use `GLO-style official file import` instead. API-fetched data is normalized into the same app schema and uses `source = official_glo_api`.
+
+This feature is for convenience only. It does not change the disclaimer: lottery results are random and no model output guarantees future outcomes.
+
 ## Expected schema
 
 The app normalizes both standard files and GLO-style files into this schema:
@@ -129,12 +137,69 @@ Rules:
 
 Add release screenshots with these filenames:
 
-- `screenshots/dashboard.png` - first screen with sample data loaded.
-- `screenshots/data-quality.png` - Data Quality tab with Trust Score.
-- `screenshots/backtest.png` - Backtest tab with No Edge warnings and Random Baseline.
-- `screenshots/export.png` - Export tab with Excel download.
+- `screenshots/dashboard.png` - app loaded with sample data, showing title, disclaimer, sidebar settings, and the default dashboard state.
+- `screenshots/data-quality.png` - Data Quality tab showing row counts, Trust Score, Calibration Report, and row-level issue table.
+- `screenshots/backtest.png` - Backtest tab showing Model Tournament, No Edge warnings, Statistical Significance, and Random Baseline.
+- `screenshots/export.png` - Export tab showing the Excel download button and report description.
 
 Use sample or public data only. Do not include private data in screenshots.
+
+After adding screenshots, include them near the top of this README:
+
+```md
+![Dashboard](screenshots/dashboard.png)
+![Data Quality](screenshots/data-quality.png)
+![Backtest](screenshots/backtest.png)
+![Export](screenshots/export.png)
+```
+
+## Real GLO data validation checklist
+
+Use this before building the optional API fetcher.
+
+1. Download a real historical CSV/Excel file from the official Thai GLO/Open Data source.
+2. Save it locally, optionally under `data/real_samples/`. Do not commit real/private downloaded files.
+3. Run `streamlit run app.py`.
+4. Select `GLO-style official file import` in the sidebar.
+5. Upload the real GLO file.
+6. Verify the normalized preview:
+   - `source` is `official_glo`
+   - `date` is parsed correctly
+   - `first_prize` stays 6 digits
+   - `last_2_digits` stays 2 digits
+   - 3-digit prize fields preserve leading zeros such as `009` and `095`
+7. Verify Data Quality:
+   - missing dates
+   - duplicate draw dates
+   - invalid `last_2_digits`
+   - row-level issue report
+8. Verify Calibration Report:
+   - imported row count
+   - date range
+   - missing draw periods
+   - invalid prize formats
+9. Verify Data Trust Score:
+   - official GLO files should usually score higher than manual/sample files
+   - low trust warning appears when data is incomplete or malformed
+10. Export Excel and confirm these sheets exist:
+   - `Raw Data`
+   - `Data Quality`
+   - `Data Quality Issues`
+   - `Data Trust Score`
+   - `Calibration Report`
+   - `Model Tournament`
+   - `Random Baseline Summary`
+   - `Statistical Significance`
+   - `Disclaimer`
+
+Issues to watch for:
+
+- Thai column names not recognized by the alias map.
+- Date columns exported as Thai/Buddhist calendar years or text.
+- Leading zeros stripped by Excel before upload.
+- Multiple rows per draw date that require reshaping before import.
+- Gaps caused by missing draws in the downloaded file rather than real missing periods.
+- Low sample size causing weak backtest and wide confidence intervals.
 
 ## หลักการ Backtest
 
